@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OTP Verification</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .container {
+      width: 300px;
+      margin: 0 auto;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #4CAF50;
+      color: #fff;
+      text-align: center;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+    }
+
+    .timer {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .verify-msg {
+      text-align: center;
+    }
+
+    .verify-msg.success {
+      color: green;
+    }
+
+    .verify-msg.error {
+      color: red;
+    }
+  </style>
+  <script type="text/javascript">
+    var timer;
+
+    function generateOTP() {
+      // Generate a random 6-digit OTP
+      var otp = Math.floor(100000 + Math.random() * 900000);
+
+      // Display the OTP in a popup window
+      alert("Your OTP: " + otp);
+
+      // Store the generated OTP in a hidden field for later verification
+      document.getElementById("hiddenOTP").value = otp;
+
+      // Enable the Verify button
+      document.getElementById("verifyButton").disabled = false;
+
+      // Enable the OTP field
+      document.getElementById("userOTP").disabled = false;
+
+      // Clear the OTP field
+      document.getElementById("userOTP").value = "";
+
+      // Start the timer
+      startTimer();
+    }
+
+    function startTimer() {
+      var timeLeft = 300; // 300 seconds = 5 minutes
+      var timerElement = document.getElementById("timer");
+
+      timer = setInterval(function() {
+        if (timeLeft <= 0) {
+          // Disable the OTP field and stop the timer
+          document.getElementById("userOTP").disabled = true;
+          clearInterval(timer);
+          timerElement.innerHTML = "Time's up!";
+        } else {
+          var minutes = Math.floor(timeLeft / 60);
+          var seconds = timeLeft % 60;
+          timerElement.innerHTML = "Time remaining: " + minutes + "m " + seconds + "s";
+          timeLeft--;
+        }
+      }, 1000);
+    }
+
+    function verifyOTP() {
+      // Get the user-entered OTP
+      var userOTP = document.getElementById("userOTP").value;
+
+      // Get the stored OTP for verification
+      var storedOTP = document.getElementById("hiddenOTP").value;
+
+      // Compare the user-entered OTP with the stored OTP
+      if (userOTP === storedOTP) {
+        showVerifyMsg("OTP verification successful!", true);
+
+        // Stop the timer
+        clearInterval(timer);
+
+        // Disable the OTP field
+        document.getElementById("userOTP").disabled = true;
+
+        // Disable the Verify button
+        document.getElementById("verifyButton").disabled = true;
+      } else {
+        showVerifyMsg("OTP verification failed. Please try again.", false);
+      }
+    }
+
+    function showVerifyMsg(message, isSuccess) {
+      var verifyMsg = document.getElementById("verifyMsg");
+      verifyMsg.textContent = message;
+
+      if (isSuccess) {
+        verifyMsg.classList.remove("error");
+        verifyMsg.classList.add("success");
+      } else {
+        verifyMsg.classList.remove("success");
+        verifyMsg.classList.add("error");
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>OTP Verification</h1>
+
+    <button class="btn" onclick="generateOTP()">Generate OTP</button>
+
+    <label for="userOTP">Enter OTP:</label>
+    <input class="input" type="text" id="userOTP" disabled>
+
+    <div class="timer" id="timer"></div>
+
+    <button class="btn" id="verifyButton" onclick="verifyOTP()" disabled>Verify OTP</button>
+
+    <div class="verify-msg" id="verifyMsg"></div>
+
+    <!-- Hidden field to store the generated OTP -->
+    <input type="hidden" id="hiddenOTP">
+  </div>
+</body>
+</html>
